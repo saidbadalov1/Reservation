@@ -1,11 +1,13 @@
 import api from "./api";
+import { TimeSlot } from "@/types/appointment.types";
+
 export interface AppointmentDate {
   date: string;
-  slots: string[];
+  slots: TimeSlot[];
 }
 
 export interface GetAvailableDatesResponse {
-  dates: AppointmentDate[];
+  availableDates: AppointmentDate[];
 }
 
 export interface CreateAppointmentRequest {
@@ -95,7 +97,7 @@ export const appointmentsApi = {
 
   cancelAppointment: async (appointmentId: string): Promise<void> => {
     const response = await api.put(`/appointments/${appointmentId}/status`, {
-      status: "cancelled",
+      status: "cancel",
     });
     return response.data;
   },

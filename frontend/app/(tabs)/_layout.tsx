@@ -1,11 +1,10 @@
 import { Tabs } from "expo-router";
 import React from "react";
-import { Platform, View, Dimensions } from "react-native";
+import { Platform } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HapticTab } from "@/components/HapticTab";
-import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
@@ -49,8 +48,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Ana Səhifə",
-          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          title: "Həkimlər",
+          tabBarIcon: ({ color }) => (
+            <TabBarIcon name="stethoscope" color={color} />
+          ),
           headerShown: false,
         }}
       />

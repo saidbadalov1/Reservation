@@ -20,7 +20,6 @@ import {
   fetchSpecialties,
   setSelectedSpecialty,
   setSortBy,
-  setAvailabilityFilter,
   setIsLoading,
 } from "@/store/slices/doctorsSlice";
 import { Doctor } from "@/types/doctor.types";
@@ -40,7 +39,7 @@ const Home = () => {
     isLoading,
     pagination,
     sortBy,
-    availabilityFilter,
+
   } = useSelector((state: RootState) => state.doctors);
   const scrollY = React.useRef(new Animated.Value(0)).current;
   const [currentPage, setCurrentPage] = React.useState(1);
@@ -76,7 +75,6 @@ const Home = () => {
           page: 1,
           limit: ITEMS_PER_PAGE,
           sort: sortBy || undefined,
-          available: availabilityFilter ?? undefined,
         })
       );
     }
@@ -85,7 +83,7 @@ const Home = () => {
     selectedSpecialty,
     isInitialLoading,
     sortBy,
-    availabilityFilter,
+
   ]);
 
   const loadMore = useCallback(() => {
@@ -98,7 +96,7 @@ const Home = () => {
           page: nextPage,
           limit: ITEMS_PER_PAGE,
           sort: sortBy || undefined,
-          available: availabilityFilter ?? undefined,
+
         })
       );
     }
@@ -109,7 +107,7 @@ const Home = () => {
     pagination,
     selectedSpecialty,
     sortBy,
-    availabilityFilter,
+
   ]);
 
   const headerHeight = scrollY.interpolate({
@@ -333,13 +331,11 @@ const Home = () => {
         visible={isFilterModalVisible}
         onClose={() => setIsFilterModalVisible(false)}
         sortBy={sortBy}
-        availabilityFilter={availabilityFilter}
+
         onSortChange={(value) => {
           dispatch(setSortBy(value));
         }}
-        onAvailabilityChange={(value) => {
-          dispatch(setAvailabilityFilter(value));
-        }}
+        
       />
 
       {/* Search Modal */}

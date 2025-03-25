@@ -41,7 +41,6 @@ export const ThemedText: React.FC<ThemedTextProps> = ({
       className={twMerge(fontSizes[size], center && "text-center", className)}
       style={[
         {
-          color: color || theme.colors.text,
           fontFamily: theme.fonts[weight].fontFamily,
         },
         style,

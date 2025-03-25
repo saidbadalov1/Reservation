@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { Screen } from "@/components/Screen";
 import { Header } from "@/components/ui/Header";
 import Auth from "@/components/Auth";
 import { useSelector, useDispatch } from "react-redux";
@@ -237,7 +236,7 @@ export default function ReservationsScreen() {
   };
 
   return (
-    <Screen>
+    <View className="flex-1 bg-white">
       <SafeAreaView className="flex-1 bg-white">
         <StatusBar style="dark" />
         <Header title={isDoctor ? "Xəstə Görüşləri" : "Rezervasiyalarım"} />
@@ -327,6 +326,6 @@ export default function ReservationsScreen() {
           </ScrollView>
         )}
       </SafeAreaView>
-    </Screen>
+    </View>
   );
 }

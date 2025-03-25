@@ -11,6 +11,7 @@ import notificationRoutes from "./routes/notification.route";
 import ratingRoutes from "./routes/rating.route";
 import commentsRouter from "./routes/comments.route";
 import { errorHandler } from "./middlewares/error.middleware";
+import doctorSettingsRoutes from "./routes/doctor.settings.routes";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/ratings", ratingRoutes);
 app.use("/api/comments", commentsRouter);
+app.use("/api/doctor-settings", doctorSettingsRoutes);
 
 // Error handling
 app.use(errorHandler);

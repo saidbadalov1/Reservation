@@ -56,19 +56,7 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onClose }) => {
           <ThemedText size="xs" color="#6b7280">
           {doctor.reviews ? `${doctor.reviews} rəy` : "rəy yoxdur"}
           </ThemedText>
-          <View
-            className={`px-2 py-1 rounded-full ${
-              doctor.available ? "bg-green-100" : "bg-gray-100"
-            }`}
-          >
-            <ThemedText
-              size="xs"
-              className="font-medium"
-              color={doctor.available ? "#059669" : "#6b7280"}
-            >
-              {doctor.available ? "Müsaitdir" : "Məşğuldur"}
-            </ThemedText>
-          </View>
+          
         </View>
       </View>
     </TouchableOpacity>

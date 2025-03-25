@@ -4,7 +4,6 @@ export interface Doctor {
   email: string;
   phone: string;
   specialty: DoctorSpecialty;
-  available: boolean;
   rating: number;
   reviews: number;
   image: string;

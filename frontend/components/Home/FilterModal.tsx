@@ -7,18 +7,14 @@ interface FilterModalProps {
   visible: boolean;
   onClose: () => void;
   sortBy: "rating" | null;
-  availabilityFilter: boolean | null;
   onSortChange: (value: "rating" | null) => void;
-  onAvailabilityChange: (value: boolean | null) => void;
 }
 
 const FilterModal = ({
   visible,
   onClose,
   sortBy,
-  availabilityFilter,
   onSortChange,
-  onAvailabilityChange,
 }: FilterModalProps) => {
   return (
     <Modal
@@ -40,47 +36,6 @@ const FilterModal = ({
               </TouchableOpacity>
             </View>
 
-            {/* Müsaitlik Filtresi */}
-            <View className="mb-6">
-              <ThemedText className="font-medium mb-3">Müsaitlik</ThemedText>
-              <View className="flex-row gap-x-3">
-                <TouchableOpacity
-                  className={`flex-1 flex-row items-center justify-center ${
-                    availabilityFilter === null ? "bg-blue-500" : "bg-gray-100"
-                  } px-4 py-3 rounded-xl`}
-                  onPress={() => {
-                    onAvailabilityChange(null);
-                  }}
-                >
-                  <ThemedText
-                    className="font-medium"
-                    color={availabilityFilter === null ? "#ffffff" : "#374151"}
-                  >
-                    Hamısı
-                  </ThemedText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className={`flex-1 flex-row items-center justify-center ${
-                    availabilityFilter === true ? "bg-green-500" : "bg-gray-100"
-                  } px-4 py-3 rounded-xl`}
-                  onPress={() => {
-                    onAvailabilityChange(true);
-                  }}
-                >
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={16}
-                    color={availabilityFilter === true ? "#ffffff" : "#374151"}
-                  />
-                  <ThemedText
-                    className="ml-2 font-medium"
-                    color={availabilityFilter === true ? "#ffffff" : "#374151"}
-                  >
-                    Müsait
-                  </ThemedText>
-                </TouchableOpacity>
-              </View>
-            </View>
 
             {/* Sıralama */}
             <View>

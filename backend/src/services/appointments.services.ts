@@ -5,7 +5,6 @@ import {
 } from "../models/appointment.model";
 import { User, IUser } from "../models/user.model";
 import { Notification } from "../models/notification.model";
-import mongoose from "mongoose";
 import { Comment } from "../models/comment.model";
 
 // Bildirim gönderme yardımcı fonksiyonu
@@ -22,8 +21,6 @@ const sendNotification = async (
       message,
       isRead: false,
     });
-
-
 
     // Mobil bildirim gönderimi burada yapılabilir (Firebase veya başka bir servis ile)
     // Bu kısma mobil bildirim kodu eklenebilir
@@ -104,27 +101,34 @@ export const createAppointment = async (
   time: string,
   reason?: string
 ) => {
-  // Doktor ve hasta var mı kontrol et
+  // Doktor kontrolü
   const doctor = await User.findOne({ _id: doctorId, role: "doctor" });
   if (!doctor) {
     throw new Error("Doktor bulunamadı");
   }
 
-  const patient = await User.findOne({ _id: patientId, role: "patient" });
-  if (!patient) {
-    throw new Error("Hasta bulunamadı");
+  // Hastanın aktif randevu sayısını kontrol et
+  const activeAppointments = await Appointment.countDocuments({
+    patientId,
+    status: { $in: ["pending", "confirmed"] },
+  });
+
+  if (activeAppointments >= 3) {
+    throw new Error(
+      "Maksimum 3 aktif randevunuz olabilir. Lütfen mevcut randevularınızı tamamlayın veya iptal edin."
+    );
   }
 
-  // Çakışan randevu var mı kontrol et
+  // Seçilen tarih ve saatte aktif randevu var mı kontrol et
   const existingAppointment = await Appointment.findOne({
     doctorId,
     date,
     time,
-    status: { $ne: "cancelled" }, // İptal edilmemiş
+    status: { $ne: "cancelled" }, // İptal edilmiş randevuları hariç tut
   });
 
   if (existingAppointment) {
-    throw new Error("Bu saat başka bir hasta tarafından alınmış");
+    throw new Error("Bu tarih ve saat için aktif bir randevu zaten var");
   }
 
   // Yeni randevu oluştur
@@ -143,7 +147,7 @@ export const createAppointment = async (
   await sendNotification(
     doctorId,
     "Yeni Görüş Tələbi",
-    `${patient.name} adlı xəstə ${date} tarixində saat ${time}-də görüş tələb etdi.`
+    `${doctor.name} adlı doktorun ${date} tarixində saat ${time}-də görüş tələb etdi.`
   );
 
   return appointment;

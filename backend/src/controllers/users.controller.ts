@@ -79,7 +79,7 @@ export const updateProfileImage = async (
         role: user.role,
         phone: user.phone,
         specialty: user.specialty,
-        available: user.available,
+
         image: user.image,
         rating: user.rating,
         reviews: user.reviews,
@@ -127,7 +127,7 @@ export const getProfile = async (
         role: user.role,
         phone: user.phone,
         specialty: user.specialty,
-        available: user.available,
+
         image: user.image,
         rating: user.rating,
         reviews: user.reviews,
@@ -180,7 +180,7 @@ export const updateProfile = async (
         role: user.role,
         phone: user.phone,
         specialty: user.specialty,
-        available: user.available,
+
         image: user.image,
         rating: user.rating,
         reviews: user.reviews,

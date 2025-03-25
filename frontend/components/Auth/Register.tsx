@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { login } from "@/store/slices/authSlice";
 import { AppDispatch } from "@/store/store";
 import { Formik } from "formik";
-import { FormInput } from "@/components/FormInput";
+import { FormInput } from "@/components/FormElements/FormInput";
 import {
   RegisterSchema,
   RegisterFormValues,

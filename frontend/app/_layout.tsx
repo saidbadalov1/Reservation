@@ -57,6 +57,12 @@ export default function Layout() {
                   headerShown: false,
                 }}
               />
+              <Stack.Screen
+                name="doctor/settings"
+                options={{
+                  headerShown: false,
+                }}
+              />
             </Stack>
             <StatusBar style="auto" />
           </ThemeProvider>

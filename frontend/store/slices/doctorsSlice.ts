@@ -10,7 +10,6 @@ interface DoctorsState {
   error: string | null;
   pagination: Pagination | null;
   sortBy: "rating" | null;
-  availabilityFilter: boolean | null;
 }
 
 const initialState: DoctorsState = {
@@ -21,7 +20,6 @@ const initialState: DoctorsState = {
   error: null,
   pagination: null,
   sortBy: null,
-  availabilityFilter: null,
 };
 
 interface FetchDoctorsParams {
@@ -39,14 +37,12 @@ export const fetchDoctors = createAsyncThunk(
     page = 1,
     limit = 10,
     sort,
-    available,
   }: FetchDoctorsParams) => {
     const response = await doctorsApi.getDoctors({
       specialty,
       page,
       limit,
       sort,
-      available,
     });
 
     return {
@@ -83,13 +79,7 @@ const doctorsSlice = createSlice({
         state.pagination = null;
       }
     },
-    setAvailabilityFilter: (state, action: PayloadAction<boolean | null>) => {
-      if (state.availabilityFilter !== action.payload) {
-        state.availabilityFilter = action.payload;
-        state.doctors = [];
-        state.pagination = null;
-      }
-    },
+
     setIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
     },
@@ -141,7 +131,7 @@ const doctorsSlice = createSlice({
 export const {
   setSelectedSpecialty,
   setSortBy,
-  setAvailabilityFilter,
+
   setIsLoading,
 } = doctorsSlice.actions;
 export default doctorsSlice.reducer;

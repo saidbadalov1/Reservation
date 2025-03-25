@@ -8,12 +8,13 @@ import {
   Modal,
   ActivityIndicator,
   Alert,
+  TextInput,
 } from "react-native";
 import { useLocalSearchParams, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Doctor } from "@/types/doctor.types";
 import { getDoctorById, getDoctorComments } from "@/services/doctors.services";
-import { appointmentsApi } from "@/services/appointments.services";
+
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
@@ -23,12 +24,14 @@ import { ThemedView } from "@/components/ThemedView";
 import { ThemedText } from "@/components/ThemedText";
 import { globalStyles } from "@/utils/globalStyles";
 import { SITE_URL } from "@/config";
+import { appointmentsApi } from "@/services/appointments.services";
 
 interface AvailableDate {
   date: string;
   formattedDate: string;
   dayName: string;
-  slots: string[];
+  slots: TimeSlot[];
+  appointmentDuration: number;
 }
 
 interface TimeSlot {
@@ -58,6 +61,7 @@ export default function DoctorDetailScreen() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [reason, setReason] = useState("");
   const [bookingInProgress, setBookingInProgress] = useState(false);
 
   useEffect(() => {
@@ -76,7 +80,6 @@ export default function DoctorDetailScreen() {
           getDoctorById(params.id),
           getDoctorComments(params.id),
         ]);
-
 
         setDoctor(doctorResponse.data);
         setComments(commentsResponse.data || []);
@@ -100,6 +103,8 @@ export default function DoctorDetailScreen() {
     try {
       const response = await appointmentsApi.getAvailableDates(doctor.id);
 
+      console.log(response.availableDates[1]);
+
       // Tarih bilgilerini format
       const dates = response.availableDates?.map((dateInfo: any) => {
         const date = new Date(dateInfo.date);
@@ -113,6 +118,7 @@ export default function DoctorDetailScreen() {
             .padStart(2, "0")}`,
           dayName: days[date.getDay()],
           slots: dateInfo.slots,
+          appointmentDuration: dateInfo.appointmentDuration,
         };
       });
 
@@ -139,17 +145,11 @@ export default function DoctorDetailScreen() {
     const dateInfo = availableDates.find((d) => d.date === date);
     if (!dateInfo) return;
 
-    // API'den gelen saat dilimlerini kullan
-    const slots = dateInfo.slots.map((time) => ({
-      time,
-      available: true,
-    }));
-
-    setTimeSlots(slots);
+    setTimeSlots(dateInfo.slots);
   };
 
   const bookAppointment = async () => {
-    if (!doctor || !selectedDate || !selectedTime) return;
+    if (!doctor || !selectedDate || !selectedTime || !reason) return;
 
     setBookingInProgress(true);
 
@@ -158,6 +158,7 @@ export default function DoctorDetailScreen() {
         doctorId: doctor.id,
         date: selectedDate,
         time: selectedTime,
+        reason,
       });
 
       setModalVisible(false);
@@ -420,7 +421,17 @@ export default function DoctorDetailScreen() {
                     <ThemedText className="text-base font-semibold mb-3">
                       Saat seçin
                     </ThemedText>
-                    <View className="flex-row flex-wrap justify-between mb-8">
+                    <View className="mb-4">
+                      <ThemedText className="text-sm text-gray-500 mb-2">
+                        Görüş müddəti:{" "}
+                        {
+                          availableDates.find((d) => d.date === selectedDate)
+                            ?.appointmentDuration
+                        }{" "}
+                        dəqiqə
+                      </ThemedText>
+                    </View>
+                    <View className="flex-row flex-wrap justify-between mb-4">
                       {timeSlots.map((slot) => (
                         <TouchableOpacity
                           key={slot.time}
@@ -450,17 +461,41 @@ export default function DoctorDetailScreen() {
                         </TouchableOpacity>
                       ))}
                     </View>
+
+                    {/* Reason input */}
+                    <View className="mb-4">
+                      <ThemedText className="text-base font-semibold mb-2">
+                        Görüş səbəbi
+                      </ThemedText>
+                      <TextInput
+                        value={reason}
+                        onChangeText={setReason}
+                        placeholder="Görüş səbəbini qeyd edin..."
+                        multiline
+                        numberOfLines={3}
+                        className="bg-gray-100 p-3 rounded-xl text-gray-800"
+                        placeholderTextColor="#9ca3af"
+                      />
+                    </View>
                   </>
                 )}
 
                 {/* Confirm button */}
                 <TouchableOpacity
                   className={`py-4 px-6 rounded-xl ${
-                    !selectedDate || !selectedTime || bookingInProgress
+                    !selectedDate ||
+                    !selectedTime ||
+                    !reason ||
+                    bookingInProgress
                       ? "bg-gray-400"
                       : "bg-blue-500"
                   }`}
-                  disabled={!selectedDate || !selectedTime || bookingInProgress}
+                  disabled={
+                    !selectedDate ||
+                    !selectedTime ||
+                    !reason ||
+                    bookingInProgress
+                  }
                   onPress={bookAppointment}
                 >
                   <ThemedText className="!text-white text-xl text-center font-semibold">

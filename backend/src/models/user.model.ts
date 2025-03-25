@@ -48,7 +48,6 @@ export interface IUser extends Document {
   password: string;
   role: "patient" | "doctor" | "admin";
   specialty?: DoctorSpecialty;
-  available?: boolean;
   rating?: number;
   reviews?: number;
   phone?: string;
@@ -79,13 +78,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["patient", "doctor", "admin"],
       default: "patient",
-    },
-    available: {
-      type: Boolean,
-      default: true,
-      required: function (this: IUser) {
-        return this.role === "doctor";
-      },
     },
     specialty: {
       type: String,

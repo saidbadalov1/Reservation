@@ -23,6 +23,7 @@ import { globalStyles } from "@/utils/globalStyles";
 import { SITE_URL } from "@/config";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -48,6 +49,7 @@ const Profile = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   // Sadece sayı girişine izin veren fonksiyon
   const handlePhoneChange = (text: string, handleChange: any) => {
@@ -317,7 +319,39 @@ const Profile = () => {
                 value={user?.rating ? user.rating.toString() : "Rəy yoxdur"}
               />
             )}
+            {user?.role === "doctor" && (
+              <TouchableOpacity
+                onPress={() => router.push("/doctor/settings")}
+                className="bg-white/80 backdrop-blur-lg p-5 rounded-3xl shadow-sm flex-row items-center"
+                style={{
+                  shadowColor: "#000",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 8,
+                  elevation: 3,
+                }}
+              >
+                <View className="w-12 h-12 bg-blue-500/10 rounded-2xl justify-center items-center">
+                  <Ionicons name="time-outline" size={22} color="#3b82f6" />
+                </View>
+                <View className="ml-4 flex-1">
+                  <ThemedText
+                    size="sm"
+                    className="font-semibold"
+                    color="#6b7280"
+                  >
+                    Ayarlar
+                  </ThemedText>
+
+                  <ThemedText size="base" className="mt-1 font-semibold">
+                    Çalışma Saatleri və Ayarlar
+                  </ThemedText>
+                </View>
+              </TouchableOpacity>
+            )}
           </View>
+
+          {/* Doktor Ayarları Butonu */}
 
           {/* Logout Button */}
           <TouchableOpacity

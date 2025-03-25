@@ -412,7 +412,7 @@ export default function AppointmentDetailScreen() {
 
             <View className="space-y-3">
               <View className="flex-row justify-between items-center">
-                <ThemedText className="text-gray-500">Tarih</ThemedText>
+                <ThemedText className="text-gray-500">Tarix</ThemedText>
                 <ThemedText>
                   {format(new Date(appointment.date), "d MMMM yyyy", {
                     locale: tr,
@@ -437,27 +437,20 @@ export default function AppointmentDetailScreen() {
                   Oluşturulma Tarihi
                 </ThemedText>
                 <ThemedText>
-                  {format(
-                    new Date(appointment.createdAt),
-                    "d MMMM yyyy HH:mm",
-                    {
-                      locale: tr,
-                    }
-                  )}
+                  {format(new Date(appointment.createdAt), "d MMMM yyyy HH:mm", {
+                    locale: tr,
+                  })}
                 </ThemedText>
               </View>
+
+              {appointment.reason && (
+                <View className="pt-3 border-t border-gray-100">
+                  <ThemedText className="text-gray-500 mb-2">Görüş səbəbi</ThemedText>
+                  <ThemedText>{appointment.reason}</ThemedText>
+                </View>
+              )}
             </View>
           </View>
-
-          {/* Notlar */}
-          {appointment.reason && (
-            <View className="bg-white rounded-xl p-4 mb-4 shadow-sm">
-              <ThemedText className="text-lg font-bold mb-2">Notlar</ThemedText>
-              <ThemedText className="text-gray-600">
-                {appointment.reason}
-              </ThemedText>
-            </View>
-          )}
 
           {/* Aksiyon Butonları */}
           {user?.role === "doctor" && (

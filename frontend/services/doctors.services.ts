@@ -27,7 +27,7 @@ export interface GetDoctorsParams {
   page?: number;
   limit?: number;
   sort?: "rating";
-  available?: boolean;
+
 }
 
 export const doctorsApi = {
@@ -36,10 +36,10 @@ export const doctorsApi = {
     page = 1,
     limit = 10,
     sort,
-    available,
+
   }: GetDoctorsParams = {}) => {
     const response = await api.get<GetDoctorsResponse>("/doctors", {
-      params: { specialty, page, limit, sort, available },
+      params: { specialty, page, limit, sort },
     });
     return response.data;
   },

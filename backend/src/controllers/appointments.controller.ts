@@ -9,10 +9,25 @@ import { Notification } from "../models/notification.model";
 import { IUser } from "../models/user.model";
 import { User } from "../models/user.model";
 import { Rating } from "../models/rating.model";
+import { DoctorSettingsService } from "../services/doctor.settings.service";
+import {
+  format,
+  parse,
+  addMinutes,
+  isSameDay,
+  isAfter,
+  isBefore,
+} from "date-fns";
+
+interface TimeSlot {
+  time: string;
+  available: boolean;
+}
 
 interface AppointmentDate {
   date: string;
-  slots: string[];
+  slots: TimeSlot[];
+  appointmentDuration: number;
 }
 
 interface AuthRequest extends Request {
@@ -33,63 +48,100 @@ export const getAvailableDates = async (req: Request, res: Response) => {
   try {
     const { doctorId } = req.params;
 
-    // Gelecek 30 günün tarihlerini oluştur
+    // Doktor ayarlarını al
+    const settings = await DoctorSettingsService.getSettings(doctorId);
+    if (!settings) {
+      return res.status(404).json({ message: "Doktor ayarları bulunamadı" });
+    }
+
     const dates: AppointmentDate[] = [];
+    const now = new Date(); // Şu anki zaman
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < 30; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
+      const currentDate = new Date(today);
+      currentDate.setDate(today.getDate() + i);
 
-      // Hafta sonlarını atla
-      if (date.getDay() === 0 || date.getDay() === 6) continue;
+      // Haftanın günü için çalışma saatlerini bul
+      const dayOfWeek = currentDate.getDay();
+      const workingHour = settings.workingHours.find(
+        (wh) => wh.dayOfWeek === dayOfWeek
+      );
 
-      // Saat dilimlerini oluştur
-      const slots = [
-        "09:00",
-        "09:30",
-        "10:00",
-        "10:30",
-        "11:00",
-        "11:30",
-        "13:00",
-        "13:30",
-        "14:00",
-        "14:30",
-        "15:00",
-        "15:30",
-        "16:00",
-        "16:30",
-      ];
+      // Eğer çalışma günü değilse veya kapalı ise atla
+      if (!workingHour || workingHour.isWorkingDay === false) {
+        continue;
+      }
+
+      const formattedDate = format(currentDate, "yyyy-MM-dd");
 
       // O güne ait randevuları kontrol et
       const existingAppointments = await Appointment.find({
         doctorId,
-        date: {
-          $gte: new Date(date.setHours(0, 0, 0, 0)),
-          $lt: new Date(date.setHours(23, 59, 59, 999)),
-        },
+        date: formattedDate,
         status: { $ne: "cancelled" },
-      });
+      }).lean();
 
-      // Dolu saatleri filtrele
-      const bookedSlots = existingAppointments.map(
-        (app: IAppointment) => app.time
-      );
-      const availableSlots = slots.filter(
-        (slot) => !bookedSlots.includes(slot)
-      );
+      // Çalışma saatleri arasındaki tüm slotları oluştur
+      const slots = [];
+      const startTime = parse(workingHour.startTime, "HH:mm", currentDate);
+      const endTime = parse(workingHour.endTime, "HH:mm", currentDate);
+      let currentSlot = startTime;
 
-      if (availableSlots.length > 0) {
+      while (currentSlot < endTime) {
+        const timeStr = format(currentSlot, "HH:mm");
+        const slotDateTime = parse(timeStr, "HH:mm", currentDate);
+
+        // Eğer bugünse ve slot zamanı geçmişse, bu slotu atla
+        if (isSameDay(currentDate, now) && isBefore(slotDateTime, now)) {
+          currentSlot = addMinutes(currentSlot, settings.appointmentDuration);
+          continue;
+        }
+
+        // Bu slot bloke edilmiş mi kontrol et
+        const isBlocked = settings.blockedTimeSlots.some(
+          (blockedSlot) =>
+            format(blockedSlot.date, "yyyy-MM-dd") === formattedDate &&
+            blockedSlot.time === timeStr
+        );
+
+        // Bu slotta randevu var mı kontrol et
+        const hasAppointment = existingAppointments.some(
+          (app) => app.time === timeStr
+        );
+
+        // Eğer slot müsaitse ekle
+        if (!isBlocked && !hasAppointment) {
+          slots.push({
+            time: timeStr,
+            available: true,
+          });
+        } else {
+          slots.push({
+            time: timeStr,
+            available: false,
+          });
+        }
+
+        // Bir sonraki slot için randevu süresi kadar ilerle
+        currentSlot = addMinutes(currentSlot, settings.appointmentDuration);
+      }
+
+      // Eğer o gün için müsait slot varsa tarihi ekle
+      if (slots.length > 0) {
         dates.push({
-          date: date.toISOString().split("T")[0],
-          slots: availableSlots,
+          date: formattedDate,
+          slots,
+          appointmentDuration: settings.appointmentDuration,
         });
       }
     }
 
-    res.json({ availableDates: dates });
+    res.json({
+      availableDates: dates,
+      appointmentDuration: settings.appointmentDuration,
+    });
   } catch (error) {
     console.error("Müsait tarihler alınırken hata:", error);
     res
@@ -307,8 +359,6 @@ export const updateAppointmentStatus = async (
         .status(400)
         .json({ message: "Rezervasyon ID və status tələb olunur" });
     }
-
-
 
     const appointment = await appointmentsService.updateAppointmentStatus(
       appointmentId,

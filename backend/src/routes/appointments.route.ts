@@ -65,8 +65,11 @@ router.put(
   (req: AuthRequest, res: Response, next: NextFunction) => {
     const { status } = req.body;
 
+
+
     if (status === "cancel") {
       // İptal işlemi - herkes yapabilir
+      req.body.status = "cancelled";
       appointmentsController.updateAppointmentStatus(req, res);
     } else if (status === "confirm") {
       // Onaylama işlemi - sadece doktor

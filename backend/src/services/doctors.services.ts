@@ -4,7 +4,7 @@ import { Comment } from "../models/comment.model";
 export const getDoctors = async () => {
   const doctors = await User.find({ role: "doctor" })
     .select(
-      "name email phone specialty available rating reviews image createdAt updatedAt"
+      "name email phone specialty rating reviews image createdAt updatedAt"
     )
     .lean();
 
@@ -18,7 +18,7 @@ export const getDoctors = async () => {
 export const getDoctorById = async (id: string) => {
   const doctor = await User.findOne({ _id: id, role: "doctor" })
     .select(
-      "name email phone specialty available rating reviews image createdAt updatedAt"
+      "name email phone specialty rating reviews image createdAt updatedAt"
     )
     .lean();
   if (!doctor) return null;
@@ -43,7 +43,7 @@ export const searchDoctors = async (query: string) => {
     name: { $regex: query, $options: "i" },
   })
     .select(
-      "name email phone specialty available rating reviews image createdAt updatedAt"
+      "name email phone specialty rating reviews image createdAt updatedAt"
     )
     .lean();
 

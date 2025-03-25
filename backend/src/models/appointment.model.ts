@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export type AppointmentStatus =
   | "pending"
@@ -17,15 +17,15 @@ export interface IAppointment extends Document {
   updatedAt: Date;
 }
 
-const appointmentSchema = new Schema<IAppointment>(
+const appointmentSchema = new mongoose.Schema(
   {
     doctorId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     patientId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -46,11 +46,10 @@ const appointmentSchema = new Schema<IAppointment>(
       type: String,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
-
-// İki randevunun çakışmasını engellemek için
-appointmentSchema.index({ doctorId: 1, date: 1, time: 1 }, { unique: true });
 
 export const Appointment = mongoose.model<IAppointment>(
   "Appointment",

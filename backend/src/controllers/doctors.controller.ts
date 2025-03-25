@@ -60,7 +60,7 @@ export const getSpecialties: RequestHandler = async (req, res) => {
 
 export const getDoctors: RequestHandler = async (req, res, next) => {
   try {
-    const { specialty, page = "1", limit = "10", sort, available } = req.query;
+    const { specialty: specialtyQuery, page = "1", limit = "10", sort } = req.query;
     const pageNumber = parseInt(page as string);
     const limitNumber = parseInt(limit as string);
     const skip = (pageNumber - 1) * limitNumber;
@@ -69,56 +69,76 @@ export const getDoctors: RequestHandler = async (req, res, next) => {
     let query: any = { role: "doctor" };
 
     // Uzmanlık filtresi
-    if (specialty && specialty !== "Hamısı") {
-      query.specialty = specialty;
-    }
-
-    // Müsaitlik filtresi
-    if (available !== undefined) {
-      // String "true" veya "false" değerini boolean'a çevir
-      query.available = available === "true";
+    if (specialtyQuery && specialtyQuery !== "Hamısı") {
+      query.specialty = specialtyQuery;
     }
 
     // Toplam doktor sayısını al
     const total = await User.countDocuments(query);
 
-    // Sayfalanmış doktorları al
-    const doctors = await User.find(query)
-      .select("-password")
-      .skip(skip)
-      .limit(limitNumber)
-      .lean();
+    // Aggregate pipeline oluştur
+    const pipeline: any[] = [
+      { $match: query },
+      {
+        $lookup: {
+          from: "ratings",
+          localField: "_id",
+          foreignField: "doctorId",
+          as: "ratings"
+        }
+      },
+      {
+        $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "doctorId",
+          as: "comments"
+        }
+      },
+      {
+        $addFields: {
+          rating: {
+            $cond: {
+              if: { $eq: [{ $size: "$ratings" }, 0] },
+              then: 0,
+              else: { $avg: "$ratings.rating" }
+            }
+          },
+          reviews: { $size: "$comments" }
+        }
+      },
+      {
+        $project: {
+          password: 0,
+          ratings: 0,
+          comments: 0,
+          __v: 0
+        }
+      }
+    ];
 
-    // Her doktor için rating ve reviews'ı hesapla
-    const doctorsWithRatingAndReviews = await Promise.all(
-      doctors.map(async (doctor) => {
-        // Rating hesapla
-        const ratings = await Rating.find({ doctorId: doctor._id });
-        const averageRating =
-          ratings.length > 0
-            ? ratings.reduce((acc, curr) => acc + curr.rating, 0) /
-              ratings.length
-            : 0;
-
-        // Yorum sayısını hesapla
-        const reviews = await Comment.countDocuments({ doctorId: doctor._id });
-
-        return {
-          ...doctor,
-          id: doctor._id,
-          rating: averageRating,
-          reviews
-        };
-      })
-    );
-
-    // Rating'e göre sıralama
+    // Sıralama ekle
     if (sort === "rating") {
-      doctorsWithRatingAndReviews.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
+      pipeline.push({ $sort: { rating: -1 } });
     }
 
+    // Sayfalama ekle
+    pipeline.push(
+      { $skip: skip },
+      { $limit: limitNumber }
+    );
+
+    const doctors = await User.aggregate(pipeline);
+
+    // ID dönüşümü
+    const doctorsWithFormattedIds = doctors.map(doctor => ({
+      ...doctor,
+      id: doctor._id,
+      _id: undefined
+    }));
+
     res.json({
-      doctors: doctorsWithRatingAndReviews,
+      doctors: doctorsWithFormattedIds,
       pagination: {
         total,
         page: pageNumber,
