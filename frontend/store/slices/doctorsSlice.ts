@@ -16,7 +16,8 @@ interface DoctorsState {
   currentPage: number;
 }
 
-export interface DoctorsFilters extends Filters {
+export interface DoctorsFilters {
+  filters: Filters;
   page: number;
 }
 
@@ -32,18 +33,10 @@ const initialState: DoctorsState = {
 export const fetchDoctors = createAsyncThunk(
   "doctors/fetchDoctors",
   async ({
-    specialty,
-    limit = 10,
-    sort,
-    searchQuery,
+    filters,
     page,
   }: DoctorsFilters) => {
-    const response = await doctorsApi.getDoctors({
-      specialty,
-      limit,
-      sort,
-      searchQuery,
-    });
+    const response = await doctorsApi.getDoctors(filters, page);
 
     return {
       doctors: response.doctors,

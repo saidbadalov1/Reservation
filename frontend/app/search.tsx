@@ -22,12 +22,13 @@ const SearchScreen = () => {
   const { filters } = useSelector((state) => state.filters);
 
   const loadMore = useCallback(() => {
+
     if (!isLoading && pagination?.hasMore) {
       const nextPage = currentPage + 1;
       dispatch(setCurrentPage(nextPage));
       dispatch(
         fetchDoctors({
-          ...filters,
+          filters,
           page: nextPage,
         })
       );
@@ -82,7 +83,7 @@ const SearchScreen = () => {
             ListFooterComponent={renderFooter}
             ListHeaderComponent={renderHeader()}
             onEndReached={loadMore}
-            onEndReachedThreshold={0.5}
+            onEndReachedThreshold={0}
             initialNumToRender={10}
             maxToRenderPerBatch={10}
             windowSize={10}

@@ -2,14 +2,17 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export enum ModalType {
   SPECIALTY = "specialtyModal",
+  SORT = "sortModal",
 }
 
 export interface ModalState {
   [ModalType.SPECIALTY]: boolean;
+  [ModalType.SORT]: boolean;
 }
 
 const initialState: ModalState = {
   [ModalType.SPECIALTY]: false,
+  [ModalType.SORT]: false,
 };
 
 export const modalSlice = createSlice({

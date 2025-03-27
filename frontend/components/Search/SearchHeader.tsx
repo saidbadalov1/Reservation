@@ -6,6 +6,7 @@ import { fetchDoctors, setCurrentPage } from "@/store/slices/doctorsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import SelectedSpecialtyModal from "./Modals/SelectedSpecialtyModal";
+import SortModal from "./Modals/SortModal";
 import { ThemedText } from "@/components/ThemedText";
 import { openModal, ModalType } from "@/store/slices/modal.slice";
 import { globalStyles } from "@/utils/globalStyles";
@@ -43,7 +44,7 @@ const SearchHeader = () => {
   const handleGetDoctors = async () => {
     dispatch(
       fetchDoctors({
-        ...filters,
+        filters,
         page: 1,
       })
     );
@@ -73,6 +74,11 @@ const SearchHeader = () => {
 
   const handleOpenModal = (modalType: ModalType) => {
     dispatch(openModal(modalType));
+  };
+
+  const getSortLabel = () => {
+    if (filters.sort === "rating") return "Ən yüksək reytinq";
+    return "Sıralama";
   };
 
   return (
@@ -124,10 +130,15 @@ const SearchHeader = () => {
           label={filters.specialty || "İxtisas"}
           onPress={() => handleOpenModal(ModalType.SPECIALTY)}
         />
+        <FilterButton
+          label={getSortLabel()}
+          onPress={() => handleOpenModal(ModalType.SORT)}
+        />
       </ScrollView>
 
       {/* Modals */}
       <SelectedSpecialtyModal />
+      <SortModal />
     </View>
   );
 };

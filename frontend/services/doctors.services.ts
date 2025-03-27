@@ -24,9 +24,9 @@ export interface GetSpecialtiesResponse {
 }
 
 export const doctorsApi = {
-  getDoctors: async (filters: Filters) => {
+  getDoctors: async (filters: Filters, page: number) => {
     const response = await api.get<GetDoctorsResponse>("/doctors", {
-      params: filters,
+      params: { ...filters, page },
     });
     return response.data;
   },
