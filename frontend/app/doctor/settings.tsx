@@ -23,7 +23,7 @@ const DAYS = [
   "Cumartesi",
 ];
 
-export default function DoctorSettings() {
+export default function DoctorSettingsScreen() {
   const [settings, setSettings] = useState<any>(null);
   const [appointmentDuration, setAppointmentDuration] = useState("30");
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
@@ -39,7 +39,6 @@ export default function DoctorSettings() {
   const fetchSettings = async () => {
     try {
       const response = await api.get(`/doctor-settings`);
-      console.log(response.data);
       setSettings(response.data);
 
       if (response.data?.appointmentDuration) {
@@ -67,11 +66,9 @@ export default function DoctorSettings() {
             : wh
         ) || [];
 
-      console.log("Gönderilen çalışma saatleri:", workingHours);
-      const response = await api.put(`/doctor-settings/working-hours`, {
+      await api.put(`/doctor-settings/working-hours`, {
         workingHours,
       });
-      console.log("API yanıtı:", response.data);
 
       fetchSettings();
     } catch (error) {

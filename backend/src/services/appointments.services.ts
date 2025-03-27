@@ -5,7 +5,6 @@ import {
 } from "../models/appointment.model";
 import { User, IUser } from "../models/user.model";
 import { Notification } from "../models/notification.model";
-import { Comment } from "../models/comment.model";
 
 // Bildirim gönderme yardımcı fonksiyonu
 const sendNotification = async (
@@ -272,11 +271,7 @@ export const getAppointmentById = async (id: string, userId: string) => {
     throw new Error("Bu rezervasyonu görüntüləmək üçün səlahiyyətiniz yoxdur");
   }
 
-  // Yorum kontrolü
-  const hasComment = await Comment.findOne({ appointmentId: id });
-
   return {
     ...appointment.toObject(),
-    hasComment: !!hasComment,
   };
 };

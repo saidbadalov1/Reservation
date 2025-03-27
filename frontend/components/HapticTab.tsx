@@ -58,7 +58,6 @@ export function HapticTab({
           flex: 1,
           justifyContent: "center",
           alignItems: "center",
-          paddingVertical: 10,
         },
         pressed && { opacity: 0.8 },
       ]}
@@ -71,7 +70,6 @@ export function HapticTab({
             {
               alignItems: "center",
               justifyContent: "center",
-              padding: 8,
             },
           ]}
         >

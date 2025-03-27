@@ -49,14 +49,13 @@ const DoctorCard: React.FC<DoctorCardProps> = ({ doctor, onClose }) => {
             </ThemedText>
           </View>
         </View>
-        <ThemedText size="sm" color="#6b7280" className="mt-1 font-medium">
+        <ThemedText size="sm" className="mt-1 font-medium">
           {doctor.specialty}
         </ThemedText>
         <View className="flex-row items-center justify-between mt-2">
           <ThemedText size="xs" color="#6b7280">
-          {doctor.reviews ? `${doctor.reviews} rəy` : "rəy yoxdur"}
+            {doctor.reviews ? `${doctor.reviews} rəy` : "rəy yoxdur"}
           </ThemedText>
-          
         </View>
       </View>
     </TouchableOpacity>

@@ -11,14 +11,25 @@ import "react-native-reanimated";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import CheckAuth from "@/utils/CheckAuth";
-import { useFonts } from "@/hooks/useFonts";
 import { ActivityIndicator, View } from "react-native";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  useFonts,
+  Manrope_400Regular,
+  Manrope_500Medium,
+  Manrope_700Bold,
+  Manrope_800ExtraBold,
+} from "@expo-google-fonts/manrope";
 
 export default function Layout() {
   const colorScheme = useColorScheme();
-  const fontsLoaded = useFonts();
+  const [fontsLoaded] = useFonts({
+    "Manrope-Regular": Manrope_400Regular,
+    "Manrope-Medium": Manrope_500Medium,
+    "Manrope-Bold": Manrope_700Bold,
+    "Manrope-ExtraBold": Manrope_800ExtraBold,
+  });
 
   if (!fontsLoaded) {
     return (
@@ -63,6 +74,13 @@ export default function Layout() {
                   headerShown: false,
                 }}
               />
+              <Stack.Screen
+                name="doctor/[id]/reservation"
+                options={{
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen name="search" options={{ headerShown: false }} />
             </Stack>
             <StatusBar style="auto" />
           </ThemeProvider>

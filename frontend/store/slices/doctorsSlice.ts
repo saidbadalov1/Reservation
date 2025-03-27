@@ -1,48 +1,48 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { doctorsApi, Pagination } from "@/services/doctors.services";
+import {
+  doctorsApi,
+  GetDoctorsResponse,
+  Pagination,
+} from "@/services/doctors.services";
 import { Doctor } from "@/types/doctor.types";
+import { Filters } from "./filters.slice";
 
 interface DoctorsState {
   doctors: Doctor[];
   specialties: string[];
-  selectedSpecialty: string;
   isLoading: boolean;
   error: string | null;
   pagination: Pagination | null;
-  sortBy: "rating" | null;
+  currentPage: number;
+}
+
+export interface DoctorsFilters extends Filters {
+  page: number;
 }
 
 const initialState: DoctorsState = {
   doctors: [],
   specialties: [],
-  selectedSpecialty: "Hamısı",
   isLoading: false,
   error: null,
   pagination: null,
-  sortBy: null,
+  currentPage: 1,
 };
-
-interface FetchDoctorsParams {
-  specialty?: string;
-  page?: number;
-  limit?: number;
-  sort?: "rating";
-  available?: boolean;
-}
 
 export const fetchDoctors = createAsyncThunk(
   "doctors/fetchDoctors",
   async ({
     specialty,
-    page = 1,
     limit = 10,
     sort,
-  }: FetchDoctorsParams) => {
+    searchQuery,
+    page,
+  }: DoctorsFilters) => {
     const response = await doctorsApi.getDoctors({
       specialty,
-      page,
       limit,
       sort,
+      searchQuery,
     });
 
     return {
@@ -65,23 +65,16 @@ const doctorsSlice = createSlice({
   name: "doctors",
   initialState,
   reducers: {
-    setSelectedSpecialty: (state, action: PayloadAction<string>) => {
-      if (state.selectedSpecialty !== action.payload) {
-        state.selectedSpecialty = action.payload;
-        state.doctors = [];
-        state.pagination = null;
-      }
-    },
-    setSortBy: (state, action: PayloadAction<"rating" | null>) => {
-      if (state.sortBy !== action.payload) {
-        state.sortBy = action.payload;
-        state.doctors = [];
-        state.pagination = null;
-      }
+    setDoctors: (state, action: PayloadAction<GetDoctorsResponse>) => {
+      state.doctors = action.payload.doctors;
+      state.pagination = action.payload.pagination;
     },
 
     setIsLoading: (state, action: PayloadAction<boolean>) => {
       state.isLoading = action.payload;
+    },
+    setCurrentPage: (state, action: PayloadAction<number>) => {
+      state.currentPage = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -128,10 +121,6 @@ const doctorsSlice = createSlice({
   },
 });
 
-export const {
-  setSelectedSpecialty,
-  setSortBy,
-
-  setIsLoading,
-} = doctorsSlice.actions;
+export const { setIsLoading, setDoctors, setCurrentPage } =
+  doctorsSlice.actions;
 export default doctorsSlice.reducer;

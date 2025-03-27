@@ -1,9 +1,8 @@
 import { RequestHandler } from "express";
 import { User, DoctorSpecialty } from "../models/user.model";
 import * as doctorsService from "../services/doctors.services";
-import { Rating } from "../models/rating.model";
+import { Rating } from "../models/ratings.model";
 import mongoose from "mongoose";
-import { Comment } from "../models/comment.model";
 
 const specialties: DoctorSpecialty[] = [
   "Terapevt",
@@ -60,7 +59,13 @@ export const getSpecialties: RequestHandler = async (req, res) => {
 
 export const getDoctors: RequestHandler = async (req, res, next) => {
   try {
-    const { specialty: specialtyQuery, page = "1", limit = "10", sort } = req.query;
+    const {
+      specialty: specialtyQuery,
+      page = "1",
+      limit = "10",
+      sort,
+      searchQuery,
+    } = req.query;
     const pageNumber = parseInt(page as string);
     const limitNumber = parseInt(limit as string);
     const skip = (pageNumber - 1) * limitNumber;
@@ -71,6 +76,14 @@ export const getDoctors: RequestHandler = async (req, res, next) => {
     // Uzmanlık filtresi
     if (specialtyQuery && specialtyQuery !== "Hamısı") {
       query.specialty = specialtyQuery;
+    }
+
+    // Search filter
+    if (searchQuery) {
+      query.$or = [
+        { name: { $regex: searchQuery, $options: "i" } },
+        { specialty: { $regex: searchQuery, $options: "i" } },
+      ];
     }
 
     // Toplam doktor sayısını al
@@ -84,16 +97,16 @@ export const getDoctors: RequestHandler = async (req, res, next) => {
           from: "ratings",
           localField: "_id",
           foreignField: "doctorId",
-          as: "ratings"
-        }
+          as: "ratings",
+        },
       },
       {
         $lookup: {
           from: "comments",
           localField: "_id",
           foreignField: "doctorId",
-          as: "comments"
-        }
+          as: "comments",
+        },
       },
       {
         $addFields: {
@@ -101,20 +114,20 @@ export const getDoctors: RequestHandler = async (req, res, next) => {
             $cond: {
               if: { $eq: [{ $size: "$ratings" }, 0] },
               then: 0,
-              else: { $avg: "$ratings.rating" }
-            }
+              else: { $avg: "$ratings.rating" },
+            },
           },
-          reviews: { $size: "$comments" }
-        }
+          reviews: { $size: "$comments" },
+        },
       },
       {
         $project: {
           password: 0,
           ratings: 0,
           comments: 0,
-          __v: 0
-        }
-      }
+          __v: 0,
+        },
+      },
     ];
 
     // Sıralama ekle
@@ -123,18 +136,15 @@ export const getDoctors: RequestHandler = async (req, res, next) => {
     }
 
     // Sayfalama ekle
-    pipeline.push(
-      { $skip: skip },
-      { $limit: limitNumber }
-    );
+    pipeline.push({ $skip: skip }, { $limit: limitNumber });
 
     const doctors = await User.aggregate(pipeline);
 
     // ID dönüşümü
-    const doctorsWithFormattedIds = doctors.map(doctor => ({
+    const doctorsWithFormattedIds = doctors.map((doctor) => ({
       ...doctor,
       id: doctor._id,
-      _id: undefined
+      _id: undefined,
     }));
 
     res.json({
@@ -156,10 +166,8 @@ export const getDoctorById: RequestHandler = async (req, res) => {
   try {
     const { id } = req.params;
 
-
     // ID'yi ObjectId'ye çevir
     const objectId = new mongoose.Types.ObjectId(id);
-
 
     const doctor = await User.findOne({
       _id: objectId,
@@ -168,31 +176,15 @@ export const getDoctorById: RequestHandler = async (req, res) => {
       .select("-password")
       .lean();
 
-
-
     if (!doctor) {
       res.status(404).json({ message: "Həkim tapılmadı" });
       return;
     }
 
-    // Doktorun rating'ini hesapla
-    const ratings = await Rating.find({ doctorId: objectId });
-
-
-    const averageRating =
-      ratings.length > 0
-        ? ratings.reduce((acc, curr) => acc + curr.rating, 0) / ratings.length
-        : 0;
-
-    // Yorumları say
-    const reviews = await Comment.countDocuments({ doctorId: objectId });
-
     res.json({
       data: {
         ...doctor,
         id: doctor._id,
-        rating: averageRating,
-        reviews
       },
     });
   } catch (error) {
@@ -226,20 +218,10 @@ export const searchDoctors: RequestHandler = async (req, res, next) => {
     const doctorsWithData = await Promise.all(
       doctors.map(async (doctor) => {
         // Rating hesapla
-        const ratings = await Rating.find({ doctorId: doctor._id });
-        const averageRating =
-          ratings.length > 0
-            ? ratings.reduce((acc, curr) => acc + curr.rating, 0) / ratings.length
-            : 0;
-
-        // Yorum sayısını hesapla
-        const reviews = await Comment.countDocuments({ doctorId: doctor._id });
 
         return {
           ...doctor,
           id: doctor._id,
-          rating: averageRating,
-          reviews
         };
       })
     );

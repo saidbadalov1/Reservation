@@ -7,6 +7,11 @@ export interface Doctor {
   rating: number;
   reviews: number;
   image: string;
+  workAddress?: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export enum DoctorSpecialty {

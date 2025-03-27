@@ -36,7 +36,6 @@ const FilterModal = ({
               </TouchableOpacity>
             </View>
 
-
             {/* Sıralama */}
             <View>
               <ThemedText className="font-medium mb-3">Sıralama</ThemedText>
@@ -50,8 +49,9 @@ const FilterModal = ({
                   }}
                 >
                   <ThemedText
-                    className="font-medium"
-                    color={sortBy === null ? "#ffffff" : "#374151"}
+                    className={`font-medium ${
+                      sortBy === null ? "text-white" : "text-gray-900"
+                    }`}
                   >
                     Defolt
                   </ThemedText>
@@ -70,8 +70,9 @@ const FilterModal = ({
                     color={sortBy === "rating" ? "#ffffff" : "#374151"}
                   />
                   <ThemedText
-                    className="ml-2 font-medium"
-                    color={sortBy === "rating" ? "#ffffff" : "#374151"}
+                    className={`ml-2 font-medium ${
+                      sortBy === "rating" ? "text-white" : "text-gray-900"
+                    }`}
                   >
                     Reytinq
                   </ThemedText>

@@ -1,5 +1,4 @@
 import { User } from "../models/user.model";
-import { Comment } from "../models/comment.model";
 
 export const getDoctors = async () => {
   const doctors = await User.find({ role: "doctor" })
@@ -23,17 +22,13 @@ export const getDoctorById = async (id: string) => {
     .lean();
   if (!doctor) return null;
 
-  // Yorumları say
-  const reviews = await Comment.countDocuments({ doctorId: id });
-
   // _id'yi id'ye dönüştür ve reviews ekle
   const { _id, ...rest } = doctor;
-  return { 
+  return {
     data: {
-      id: _id, 
+      id: _id,
       ...rest,
-      reviews 
-    }
+    },
   };
 };
 
@@ -57,13 +52,4 @@ export const searchDoctors = async (query: string) => {
 export const getSpecialties = async () => {
   const doctors = await User.find({ role: "doctor" }).distinct("specialty");
   return doctors;
-};
-
-export const getDoctorComments = async (doctorId: string) => {
-  const comments = await Comment.find({ doctorId })
-    .populate("patientId", "name image")
-    .sort({ createdAt: -1 })
-    .lean();
-
-  return comments;
 };

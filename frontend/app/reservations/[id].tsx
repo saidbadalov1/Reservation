@@ -25,10 +25,12 @@ import { tr } from "date-fns/locale";
 import { appointmentsApi } from "@/services/appointments.services";
 import { SITE_URL } from "@/config";
 import { updateAppointment } from "@/store/slices/appointmentsSlice";
-import { ratingApi } from "@/services/rating.services";
+
 import { StarIcon } from "react-native-heroicons/outline";
 import { StarIcon as StarIconSolid } from "react-native-heroicons/solid";
 import { commentsApi } from "../../services/comments.services";
+import { RatingModal } from "@/components/Modals/RatingModal";
+import { ratingsApi } from "@/services/ratings.services";
 
 interface Appointment {
   id: string;
@@ -70,6 +72,7 @@ export default function AppointmentDetailScreen() {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [isRating, setIsRating] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
 
   const fetchAppointment = async () => {
     try {
@@ -169,7 +172,6 @@ export default function AppointmentDetailScreen() {
           text: "Onayla",
           style: "default",
           onPress: async () => {
-            console.log(action);
             if (appointment) {
               try {
                 let response;
@@ -216,21 +218,26 @@ export default function AppointmentDetailScreen() {
     }
   };
 
-  const handleRating = async () => {
+  const handleRatingSubmit = async (rating: number, comment: string) => {
     try {
-      await ratingApi.createRating(id as string, rating, comment);
-      Alert.alert("Uğurlu", "Rating uğurla göndərildi", [
+      await ratingsApi.createRating({
+        appointmentId: appointment?.id as string,
+        doctorId: appointment?.doctorId as string,
+        rating,
+        comment,
+      });
+      Alert.alert("Uğurlu", "Rəyiniz uğurla göndərildi", [
         {
           text: "OK",
           onPress: () => {
-            setIsRating(false);
+            setShowRatingModal(false);
             fetchAppointment();
           },
         },
       ]);
     } catch (error: any) {
-      console.error("Rating gönderilirken hata:", error.response.data.message);
-      Alert.alert("Hata", "Rating gönderilirken bir hata oluştu");
+      console.error("Rəy göndərilərkən xəta:", error.response?.data?.message);
+      Alert.alert("Xəta", "Rəy göndərilərkən xəta baş verdi");
     }
   };
 
@@ -437,15 +444,21 @@ export default function AppointmentDetailScreen() {
                   Oluşturulma Tarihi
                 </ThemedText>
                 <ThemedText>
-                  {format(new Date(appointment.createdAt), "d MMMM yyyy HH:mm", {
-                    locale: tr,
-                  })}
+                  {format(
+                    new Date(appointment.createdAt),
+                    "d MMMM yyyy HH:mm",
+                    {
+                      locale: tr,
+                    }
+                  )}
                 </ThemedText>
               </View>
 
               {appointment.reason && (
                 <View className="pt-3 border-t border-gray-100">
-                  <ThemedText className="text-gray-500 mb-2">Görüş səbəbi</ThemedText>
+                  <ThemedText className="text-gray-500 mb-2">
+                    Görüş səbəbi
+                  </ThemedText>
                   <ThemedText>{appointment.reason}</ThemedText>
                 </View>
               )}
@@ -515,55 +528,27 @@ export default function AppointmentDetailScreen() {
             user?.role === "patient" &&
             !appointment.hasRating && (
               <TouchableOpacity
-                onPress={() => setIsRating(true)}
-                className="bg-blue-500 px-4 py-2 rounded-lg mt-4"
+                onPress={() => setShowRatingModal(true)}
+                className="bg-blue-500 px-4 py-3 rounded-xl mt-4"
               >
-                <Text className="text-white text-center font-medium">
-                  Rating ver
-                </Text>
+                <ThemedText className="!text-white text-center font-semibold">
+                  Rəy bildir
+                </ThemedText>
               </TouchableOpacity>
             )}
 
-          {isRating && (
-            <View className="bg-white rounded-lg shadow-sm p-4 mb-4">
-              <ThemedText className="text-lg font-semibold mb-2">
-                Rating Ver
-              </ThemedText>
-              <View className="flex-row justify-center mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <TouchableOpacity
-                    key={star}
-                    onPress={() => setRating(star)}
-                    className="mx-1"
-                  >
-                    {star <= rating ? (
-                      <StarIconSolid size={30} color="#FFD700" />
-                    ) : (
-                      <StarIcon size={30} color="#FFD700" />
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
-              <View className="flex-row justify-between">
-                <TouchableOpacity
-                  onPress={() => setIsRating(false)}
-                  className="bg-gray-500 p-4 rounded-lg flex-1 mr-2"
-                >
-                  <ThemedText className="!text-white text-center font-semibold">
-                    Ləğv Et
-                  </ThemedText>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleRating}
-                  className="bg-blue-500 p-4 rounded-lg flex-1 ml-2"
-                >
-                  <ThemedText className="!text-white text-center font-semibold">
-                    Göndər
-                  </ThemedText>
-                </TouchableOpacity>
-              </View>
-            </View>
-          )}
+          <RatingModal
+            visible={showRatingModal}
+            onClose={() => setShowRatingModal(false)}
+            onSubmit={handleRatingSubmit}
+            appointmentDetails={{
+              doctorName: appointment?.doctor?.name || "",
+              date: format(new Date(appointment?.date || ""), "d MMMM yyyy", {
+                locale: tr,
+              }),
+              time: appointment?.time || "",
+            }}
+          />
 
           {appointment?.status === "completed" &&
             !appointment.hasComment &&

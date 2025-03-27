@@ -1,8 +1,7 @@
 import { Text, TextProps } from "react-native";
 import { twMerge } from "tailwind-merge";
-import { useTheme } from "@react-navigation/native";
 
-type FontWeight = "regular" | "medium" | "bold" | "heavy";
+type FontWeight = "regular" | "medium" | "bold" | "extrabold";
 type TextSize = "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
 
 interface ThemedTextProps extends TextProps {
@@ -24,6 +23,13 @@ const fontSizes = {
   "4xl": "text-4xl", // 36px
 };
 
+const fontFamilies = {
+  regular: "Manrope-Regular",
+  medium: "Manrope-Medium",
+  bold: "Manrope-Bold",
+  extrabold: "Manrope-ExtraBold",
+};
+
 export const ThemedText: React.FC<ThemedTextProps> = ({
   children,
   weight = "regular",
@@ -34,14 +40,17 @@ export const ThemedText: React.FC<ThemedTextProps> = ({
   style,
   ...props
 }) => {
-  const theme = useTheme();
-
   return (
     <Text
-      className={twMerge(fontSizes[size], center && "text-center", className)}
+      className={twMerge(
+        "text-typography-900",
+        fontSizes[size],
+        center && "text-center",
+        className
+      )}
       style={[
         {
-          fontFamily: theme.fonts[weight].fontFamily,
+          fontFamily: fontFamilies[weight],
         },
         style,
       ]}

@@ -53,4 +53,4 @@ doctorSettingsSchema.index({ doctorId: 1 }, { unique: true });
 export const DoctorSettings = mongoose.model<IDoctorSettings>(
   "DoctorSettings",
   doctorSettingsSchema
-); 
+);

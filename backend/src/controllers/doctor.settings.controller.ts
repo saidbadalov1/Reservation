@@ -5,12 +5,12 @@ import { AuthRequest } from "../types/auth";
 export class DoctorSettingsController {
   static async getSettings(req: AuthRequest, res: Response) {
     try {
-      console.log("Doktor ID:", req.user!.id);
+
       const settings = await DoctorSettingsService.getSettings(req.user!.id);
-      console.log("Bulunan ayarlar:", settings);
+
       res.json(settings);
     } catch (error) {
-      console.error("Ayarlar alınırken hata:", error);
+
       res.status(500).json({ message: "Ayarlar alınırken bir hata oluştu" });
     }
   }
@@ -69,7 +69,6 @@ export class DoctorSettingsController {
   static async updateWorkingHours(req: AuthRequest, res: Response) {
     try {
       const { workingHours } = req.body;
-      console.log("Gelen çalışma saatleri:", workingHours);
 
       if (!Array.isArray(workingHours)) {
         return res
@@ -81,7 +80,6 @@ export class DoctorSettingsController {
         req.user!.id,
         workingHours
       );
-      console.log("Güncellenen ayarlar:", settings);
       res.json(settings);
     } catch (error) {
       console.error("Çalışma saatleri güncellenirken hata:", error);
@@ -94,7 +92,6 @@ export class DoctorSettingsController {
   static async updateAppointmentDuration(req: AuthRequest, res: Response) {
     try {
       const { duration } = req.body;
-      console.log("Gelen randevu süresi:", duration);
 
       if (!duration || typeof duration !== "number" || duration <= 0) {
         return res.status(400).json({ message: "Geçersiz randevu süresi" });
@@ -104,13 +101,22 @@ export class DoctorSettingsController {
         req.user!.id,
         duration
       );
-      console.log("Güncellenen ayarlar:", settings);
       res.json(settings);
     } catch (error) {
       console.error("Randevu süresi güncellenirken hata:", error);
       res
         .status(500)
         .json({ message: "Randevu süresi güncellenirken bir hata oluştu" });
+    }
+  }
+
+  static async getSettingsById(req: Request, res: Response) {
+    try {
+      const { doctorId } = req.params;
+      const settings = await DoctorSettingsService.getSettings(doctorId);
+      res.json(settings);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   }
 }

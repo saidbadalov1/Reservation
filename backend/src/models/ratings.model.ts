@@ -1,29 +1,28 @@
-import { Schema, model, Document } from "mongoose";
+import mongoose, { Schema, Document } from "mongoose";
 
 export interface IRating extends Document {
-  appointmentId: Schema.Types.ObjectId;
-  doctorId: Schema.Types.ObjectId;
-  patientId: Schema.Types.ObjectId;
+  appointmentId: mongoose.Types.ObjectId;
+  doctorId: mongoose.Types.ObjectId;
+  patientId: mongoose.Types.ObjectId;
   rating: number;
-  comment?: string;
+  comment: string;
   createdAt: Date;
-  updatedAt: Date;
 }
 
-const ratingSchema = new Schema<IRating>(
+const ratingSchema = new Schema(
   {
     appointmentId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Appointment",
       required: true,
     },
     doctorId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
     patientId: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
@@ -35,7 +34,7 @@ const ratingSchema = new Schema<IRating>(
     },
     comment: {
       type: String,
-      trim: true,
+      required: true,
     },
   },
   {
@@ -43,7 +42,7 @@ const ratingSchema = new Schema<IRating>(
   }
 );
 
-// Bir randevuya sadece bir rating verilebilir
+// Bir appointment için sadece bir rating olabilir
 ratingSchema.index({ appointmentId: 1 }, { unique: true });
 
-export const Rating = model<IRating>("Rating", ratingSchema);
+export const Rating = mongoose.model<IRating>("Rating", ratingSchema);

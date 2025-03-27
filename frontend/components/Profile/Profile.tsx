@@ -171,7 +171,7 @@ const Profile = () => {
         <Ionicons name={icon} size={22} color="#3b82f6" />
       </View>
       <View className="ml-4 flex-1">
-        <ThemedText size="sm" className="font-semibold" color="#6b7280">
+        <ThemedText size="sm" className="font-semibold">
           {title}
         </ThemedText>
         <ThemedText size="base" className="mt-1 font-semibold">
@@ -248,13 +248,13 @@ const Profile = () => {
               </TouchableOpacity>
             </View>
 
-            <ThemedText size="2xl" color="#ffffff" className="mt-4 font-bold">
+            <ThemedText size="2xl" className="mt-4 font-bold text-white">
               {user?.name}
             </ThemedText>
             <ThemedText
               size="base"
               color="rgba(255, 255, 255, 0.9)"
-              className="mt-1 font-semibold"
+              className="mt-1 font-semibold text-white"
             >
               {user?.email}
             </ThemedText>
@@ -265,11 +265,7 @@ const Profile = () => {
               onPress={() => setIsEditModalVisible(true)}
             >
               <Ionicons name="create-outline" size={16} color="#ffffff" />
-              <ThemedText
-                className="ml-1 font-semibold"
-                color="#ffffff"
-                size="sm"
-              >
+              <ThemedText className="ml-1 font-semibold text-white" size="sm">
                 Məlumatları Düzənlə
               </ThemedText>
             </TouchableOpacity>
@@ -335,11 +331,7 @@ const Profile = () => {
                   <Ionicons name="time-outline" size={22} color="#3b82f6" />
                 </View>
                 <View className="ml-4 flex-1">
-                  <ThemedText
-                    size="sm"
-                    className="font-semibold"
-                    color="#6b7280"
-                  >
+                  <ThemedText size="sm" className="font-semibold">
                     Ayarlar
                   </ThemedText>
 
@@ -366,9 +358,7 @@ const Profile = () => {
             }}
           >
             <Ionicons name="log-out-outline" size={24} color="white" />
-            <ThemedText className="ml-2 font-bold" color="#ffffff">
-              Çıxış
-            </ThemedText>
+            <ThemedText className="ml-2 font-bold text-white">Çıxış</ThemedText>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -419,11 +409,7 @@ const Profile = () => {
                   }) => (
                     <View>
                       <View className="mb-4">
-                        <ThemedText
-                          size="sm"
-                          className="font-semibold mb-2"
-                          color="#6b7280"
-                        >
+                        <ThemedText size="sm" className="font-semibold mb-2">
                           Ad
                         </ThemedText>
                         <TextInput
@@ -434,22 +420,14 @@ const Profile = () => {
                           value={values.name}
                         />
                         {touched.name && errors.name && (
-                          <ThemedText
-                            size="xs"
-                            color="#ef4444"
-                            className="mt-1"
-                          >
+                          <ThemedText size="xs" className="mt-1">
                             {errors.name}
                           </ThemedText>
                         )}
                       </View>
 
                       <View className="mb-4">
-                        <ThemedText
-                          size="sm"
-                          className="font-semibold mb-2"
-                          color="#6b7280"
-                        >
+                        <ThemedText size="sm" className="font-semibold mb-2">
                           Telefon
                         </ThemedText>
                         <TextInput
@@ -490,7 +468,7 @@ const Profile = () => {
                               size={20}
                               color="white"
                             />
-                            <ThemedText className="ml-2" color="#ffffff">
+                            <ThemedText className="ml-2">
                               Yadda Saxla
                             </ThemedText>
                           </>

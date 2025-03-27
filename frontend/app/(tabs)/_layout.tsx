@@ -6,51 +6,57 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
 
-/**
- * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
- */
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
   color: string;
+  focused: boolean;
 }) {
-  return <FontAwesome size={24} style={{ marginBottom: -3 }} {...props} />;
+  return (
+    <FontAwesome
+      size={24}
+      style={{
+        marginBottom: -3,
+        opacity: props.focused ? 1 : 0.5,
+      }}
+      {...props}
+    />
+  );
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   const insets = useSafeAreaInsets();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: "#254EDB", // Figma active color
+        tabBarInactiveTintColor: "#A1A1AA", // Figma inactive color
         tabBarStyle: {
-          backgroundColor: "transparent",
-          borderTopWidth: 0,
+          backgroundColor: "#FFFFFF",
+          borderTopWidth: 1,
+          borderTopColor: "#F3F4F6",
           elevation: 0,
           position: "absolute",
           height: 60 + (Platform.OS === "ios" ? insets.bottom : 10),
-          paddingTop: 5,
         },
         tabBarLabelStyle: {
-          fontFamily: "Poppins",
-          fontSize: 12,
+          fontFamily: "Manrope Medium",
+          fontSize: 11,
+          lineHeight: 20,
+          fontWeight: "500",
           marginBottom: Platform.OS === "ios" ? 0 : 8,
         },
         tabBarButton: (props) => <HapticTab {...props} />,
         headerShown: true,
-        tabBarBackground: () => <TabBarBackground />,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Həkimlər",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="stethoscope" color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name="stethoscope" color={color} focused={focused} />
           ),
           headerShown: false,
         }}
@@ -58,19 +64,20 @@ export default function TabLayout() {
       <Tabs.Screen
         name="reservations"
         options={{
-          title: "Rezervasyonlar",
-          tabBarIcon: ({ color }) => (
-            <TabBarIcon name="calendar" color={color} />
+          title: "Rezervasiyalar",
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name="calendar" color={color} focused={focused} />
           ),
           headerShown: false,
         }}
       />
-
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profil",
-          tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name="user" color={color} focused={focused} />
+          ),
           headerShown: false,
         }}
       />

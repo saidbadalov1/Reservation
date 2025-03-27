@@ -8,8 +8,7 @@ import usersRoutes from "./routes/users.routes";
 import path from "path";
 import appointmentRoutes from "./routes/appointments.route";
 import notificationRoutes from "./routes/notification.route";
-import ratingRoutes from "./routes/rating.route";
-import commentsRouter from "./routes/comments.route";
+import ratingRoutes from "./routes/ratings.routes";
 import { errorHandler } from "./middlewares/error.middleware";
 import doctorSettingsRoutes from "./routes/doctor.settings.routes";
 
@@ -29,7 +28,6 @@ app.use("/api/users", usersRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/ratings", ratingRoutes);
-app.use("/api/comments", commentsRouter);
 app.use("/api/doctor-settings", doctorSettingsRoutes);
 
 // Error handling

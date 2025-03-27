@@ -1,3 +1,4 @@
+import { Filters } from "@/store/slices/filters.slice";
 import api from "./api";
 import { Doctor } from "@/types/doctor.types";
 
@@ -22,24 +23,10 @@ export interface GetSpecialtiesResponse {
   specialties: string[];
 }
 
-export interface GetDoctorsParams {
-  specialty?: string;
-  page?: number;
-  limit?: number;
-  sort?: "rating";
-
-}
-
 export const doctorsApi = {
-  getDoctors: async ({
-    specialty,
-    page = 1,
-    limit = 10,
-    sort,
-
-  }: GetDoctorsParams = {}) => {
+  getDoctors: async (filters: Filters) => {
     const response = await api.get<GetDoctorsResponse>("/doctors", {
-      params: { specialty, page, limit, sort },
+      params: filters,
     });
     return response.data;
   },
@@ -49,16 +36,6 @@ export const doctorsApi = {
     );
     return response.data;
   },
-};
-
-export const searchDoctors = async (query: string): Promise<Doctor[]> => {
-  const response = await api.get(`/doctors/search?query=${query}`);
-  return response.data.data;
-};
-
-export const getDoctors = async (): Promise<GetDoctorsResponse> => {
-  const response = await api.get("/doctors");
-  return response.data;
 };
 
 export const getDoctorById = async (id: string): Promise<GetDoctorResponse> => {

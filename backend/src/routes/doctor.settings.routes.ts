@@ -1,12 +1,20 @@
-import express, { RequestHandler } from "express";
+import { Router } from "express";
 import { DoctorSettingsController } from "../controllers/doctor.settings.controller";
+import { RequestHandler } from "express";
 import { auth } from "../middlewares/auth.middleware";
 import { checkRole } from "../middlewares/checkRole.middleware";
 
-const router = express.Router();
+const router = Router();
 
-// Tüm rotalar için doktor rolü kontrolü
-router.use(auth as RequestHandler, checkRole(["doctor"]) as RequestHandler);
+// Public route - anyone can get doctor settings
+router.get(
+  "/:doctorId",
+  DoctorSettingsController.getSettingsById as RequestHandler
+);
+
+// Protected routes - only doctor can modify their own settings
+router.use(auth as RequestHandler);
+router.use(checkRole(["doctor"]) as RequestHandler);
 
 // Doktor ayarlarını getir
 router.get("/", DoctorSettingsController.getSettings as RequestHandler);
@@ -16,13 +24,13 @@ router.put("/", DoctorSettingsController.updateSettings as RequestHandler);
 
 // Saat dilimi blokla
 router.post(
-  "/block-time",
+  "/block-time-slot",
   DoctorSettingsController.blockTimeSlot as RequestHandler
 );
 
 // Saat dilimi blokajını kaldır
 router.post(
-  "/unblock-time",
+  "/unblock-time-slot",
   DoctorSettingsController.unblockTimeSlot as RequestHandler
 );
 

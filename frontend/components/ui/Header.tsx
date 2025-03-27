@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { IconSymbol } from "./IconSymbol";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { ThemedText } from "../ThemedText";
 interface HeaderProps {
   title: string;
   showBackButton?: boolean;
@@ -31,12 +32,14 @@ export const Header = ({
       <View style={styles.leftContainer}>
         {showBackButton && (
           <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-            <Ionicons name="arrow-back-circle-outline" size={24} color="#000" />
+            <Ionicons name="chevron-back" size={20} color="#000" />
           </TouchableOpacity>
         )}
       </View>
 
-      <Text style={styles.title}>{title}</Text>
+      <ThemedText weight="bold" style={styles.title}>
+        {title}
+      </ThemedText>
 
       <View style={styles.rightContainer}>{rightComponent}</View>
     </View>
@@ -46,6 +49,7 @@ export const Header = ({
 const styles = StyleSheet.create({
   container: {
     height: 60,
+
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",

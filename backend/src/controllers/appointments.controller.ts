@@ -8,16 +8,9 @@ import {
 import { Notification } from "../models/notification.model";
 import { IUser } from "../models/user.model";
 import { User } from "../models/user.model";
-import { Rating } from "../models/rating.model";
+import { Rating } from "../models/ratings.model";
 import { DoctorSettingsService } from "../services/doctor.settings.service";
-import {
-  format,
-  parse,
-  addMinutes,
-  isSameDay,
-  isAfter,
-  isBefore,
-} from "date-fns";
+import { format, parse, addMinutes, isSameDay, isBefore } from "date-fns";
 
 interface TimeSlot {
   time: string;
@@ -80,7 +73,7 @@ export const getAvailableDates = async (req: Request, res: Response) => {
       const existingAppointments = await Appointment.find({
         doctorId,
         date: formattedDate,
-        status: { $ne: "cancelled" },
+        status: { $nin: ["cancelled", "rejected", "completed"] },
       }).lean();
 
       // Çalışma saatleri arasındaki tüm slotları oluştur
