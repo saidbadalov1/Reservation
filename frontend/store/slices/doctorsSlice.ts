@@ -6,6 +6,7 @@ import {
 } from "@/services/doctors.services";
 import { Doctor } from "@/types/doctor.types";
 import { Filters } from "./filters.slice";
+import { staticDoctors } from "@/utils/staticDoctors";
 
 interface DoctorsState {
   doctors: Doctor[];
@@ -32,10 +33,7 @@ const initialState: DoctorsState = {
 
 export const fetchDoctors = createAsyncThunk(
   "doctors/fetchDoctors",
-  async ({
-    filters,
-    page,
-  }: DoctorsFilters) => {
+  async ({ filters, page }: DoctorsFilters) => {
     const response = await doctorsApi.getDoctors(filters, page);
 
     return {
@@ -81,7 +79,8 @@ const doctorsSlice = createSlice({
         state.isLoading = false;
         // İlk sayfa ise listeyi sıfırla, değilse ekle
         if (action.payload.page === 1) {
-          state.doctors = action.payload.doctors;
+          // Include static doctors with API results on the first page
+          state.doctors = [...staticDoctors, ...action.payload.doctors];
         } else {
           // Yeni doktorları eklerken tekrar eden ID'leri önle
           const existingIds = new Set(state.doctors.map((d) => d.id));

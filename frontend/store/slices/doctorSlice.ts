@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { Doctor } from "@/types/doctor.types";
 import api from "@/services/api";
+import { staticDoctors } from "@/utils/staticDoctors";
 
 interface DoctorState {
   currentDoctor: Doctor | null;
@@ -17,6 +18,15 @@ const initialState: DoctorState = {
 export const fetchDoctor = createAsyncThunk(
   "doctor/fetchDoctor",
   async (doctorId: string) => {
+    // First, check if the doctorId belongs to a static doctor
+    const staticDoctor = staticDoctors.find((doc) => doc.id === doctorId);
+
+    // If it's a static doctor, return it directly
+    if (staticDoctor) {
+      return staticDoctor;
+    }
+
+    // Otherwise, make the API call
     const response = await api.get(`/doctors/${doctorId}`);
     return response.data.data;
   }

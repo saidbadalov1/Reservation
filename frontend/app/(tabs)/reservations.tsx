@@ -10,7 +10,6 @@ import {
 import React, { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { Header } from "@/components/ui/Header";
-import Auth from "@/components/Auth";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { appointmentsApi, Appointment } from "@/services/appointments.services";
@@ -27,9 +26,7 @@ import { globalStyles } from "@/utils/globalStyles";
 
 export default function ReservationsScreen() {
   const dispatch = useDispatch<AppDispatch>();
-  const isAuthenticated = useSelector(
-    (state: RootState) => state.auth.isAuthenticated
-  );
+
   const user = useSelector((state: RootState) => state.auth.user);
   const appointments = useSelector(
     (state: RootState) => state.appointments.appointments
@@ -121,14 +118,8 @@ export default function ReservationsScreen() {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      fetchAppointments();
-    }
-  }, [isAuthenticated, isDoctor]);
-
-  if (!isAuthenticated) {
-    return <Auth />;
-  }
+    fetchAppointments();
+  }, [isDoctor]);
 
   const getStatusText = (status: string) => {
     switch (status) {

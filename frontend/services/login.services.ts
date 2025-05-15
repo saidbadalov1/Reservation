@@ -1,32 +1,13 @@
+import { User } from "@/types/user.types";
 import api from "./api";
 
 export interface LoginResponse {
   token: string;
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: "patient" | "doctor";
-    image: string;
-    phone: string;
-    rating?: number;
-    reviews?: number;
-    speciality?: string;
-  };
+  user: User;
 }
 
 export interface GetMeResponse {
-  user: {
-    id: string;
-    name: string;
-    email: string;
-    role: "patient" | "doctor";
-    image: string;
-    phone: string;
-    rating?: number;
-    reviews?: number;
-    speciality?: string;
-  };
+  user: User;
 }
 
 export const authApi = {

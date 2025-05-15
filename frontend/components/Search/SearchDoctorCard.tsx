@@ -23,7 +23,9 @@ const SearchDoctorCard: React.FC<SearchDoctorCardProps> = ({ doctor }) => {
       {/* Doctor Image */}
       <View className="w-16 h-16 rounded-full bg-gray-50 border border-gray-100 overflow-hidden">
         <Image
-          source={{ uri: `${SITE_URL}${image}` }}
+          source={{
+            uri: `https://c8.alamy.com/comp/2E4WTPW/cartoon-character-3d-avatar-middle-age-smiling-caucasian-male-professional-doctor-isolated-on-white-2E4WTPW.jpg`,
+          }}
           className="w-full h-full "
           resizeMode="cover"
         />

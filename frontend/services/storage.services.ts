@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AUTH_TOKEN_KEY = "@auth_token";
 const USER_DATA_KEY = "@user_data";
+const HAS_SEEN_ONBOARDING_KEY = "@has_seen_onboarding";
 
 export const storage = {
   // Token işlemleri
@@ -47,6 +48,32 @@ export const storage = {
       await AsyncStorage.multiRemove([AUTH_TOKEN_KEY, USER_DATA_KEY]);
     } catch (error) {
       // Auth temizleme hatası
+    }
+  },
+
+  // Onboarding işlemleri
+  hasSeenOnboarding: async () => {
+    try {
+      const hasSeen = await AsyncStorage.getItem(HAS_SEEN_ONBOARDING_KEY);
+      return hasSeen === "true";
+    } catch (error) {
+      return false;
+    }
+  },
+
+  setHasSeenOnboarding: async () => {
+    try {
+      await AsyncStorage.setItem(HAS_SEEN_ONBOARDING_KEY, "true");
+    } catch (error) {
+      // Onboarding durumu saklama hatası
+    }
+  },
+
+  clearOnboarding: async () => {
+    try {
+      await AsyncStorage.removeItem(HAS_SEEN_ONBOARDING_KEY);
+    } catch (error) {
+      // Onboarding temizleme hatası
     }
   },
 };

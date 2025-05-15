@@ -10,7 +10,6 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import "@/global.css";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import CheckAuth from "@/utils/CheckAuth";
 import { ActivityIndicator, View } from "react-native";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -21,6 +20,9 @@ import {
   Manrope_700Bold,
   Manrope_800ExtraBold,
 } from "@expo-google-fonts/manrope";
+import OnboardingWrapper from "@/components/Onboarding/OnboardingWrapper";
+import AuthWrapper from "@/components/Auth/AuthWrapper";
+import { storage } from "@/services/storage.services";
 
 export default function Layout() {
   const colorScheme = useColorScheme();
@@ -43,47 +45,48 @@ export default function Layout() {
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
-          <CheckAuth />
-          <ThemeProvider
-            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-          >
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-              <Stack.Screen
-                name="doctor/[id]"
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="notifications"
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="reservations/[id]"
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="doctor/settings"
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen
-                name="doctor/[id]/reservation"
-                options={{
-                  headerShown: false,
-                }}
-              />
-              <Stack.Screen name="search" options={{ headerShown: false }} />
-            </Stack>
-            <StatusBar style="auto" />
-          </ThemeProvider>
+          <OnboardingWrapper>
+            <ThemeProvider
+              value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
+            >
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+                <Stack.Screen
+                  name="doctor/[id]/index"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="notifications"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="reservations/[id]"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="doctor/settings"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="doctor/[id]/reservation"
+                  options={{
+                    headerShown: false,
+                  }}
+                />
+                <Stack.Screen name="search" options={{ headerShown: false }} />
+              </Stack>
+              <StatusBar style="auto" />
+            </ThemeProvider>
+          </OnboardingWrapper>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </Provider>

@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   Animated,
   ScrollView,
-  SafeAreaView,
 } from "react-native";
 import Login from "./Login";
 import Register from "./Register";
+import { SafeAreaView } from "../NativeComponents/SafeAreaView";
 
 function Auth() {
   const [screen, setScreen] = useState<"login" | "register">("login");
@@ -17,15 +17,15 @@ function Auth() {
   const isLogin = screen === "login";
 
   return (
-    <ThemedView className="flex-1">
-      <SafeAreaView className="flex-1">
+    <SafeAreaView>
+      <View className="flex-1">
         <ScrollView
           showsVerticalScrollIndicator={false}
           bounces={false}
           contentContainerStyle={{
             flexGrow: 1,
             justifyContent: "center",
-            paddingVertical: 100,
+            paddingVertical: 50,
           }}
           keyboardShouldPersistTaps="handled"
           className="flex-1  px-6"
@@ -62,8 +62,8 @@ function Auth() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </SafeAreaView>
-    </ThemedView>
+      </View>
+    </SafeAreaView>
   );
 }
 

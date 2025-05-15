@@ -89,12 +89,12 @@ export default function DoctorSettingsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <Header showBackButton title="Doktor Ayarları" />
-      <ScrollView className="flex-1 ">
+      {/* <Header showBackButton title="Doktor Ayarları" /> */}
+      {/* <ScrollView className="flex-1 ">
         <View style={globalStyles.container} className="py-4">
           <Text className="text-2xl font-bold mb-6">Doktor Ayarları</Text>
 
-          {/* Randevu Süresi */}
+
           <View className="mb-6">
             <Text className="text-lg font-semibold mb-3">
               Randevu Süresi (Dakika)
@@ -115,7 +115,7 @@ export default function DoctorSettingsScreen() {
             </View>
           </View>
 
-          {/* Çalışma Saatleri */}
+
           <View className="mb-6">
             <Text className="text-lg font-semibold mb-3">Çalışma Saatleri</Text>
             {DAYS.map((day, index) => (
@@ -190,7 +190,7 @@ export default function DoctorSettingsScreen() {
             ))}
           </View>
 
-          {/* Saat Seçiciler */}
+
           {selectedDay !== null && (
             <View className="mt-4 p-4 bg-gray-100 rounded-lg">
               <TouchableOpacity
@@ -253,7 +253,7 @@ export default function DoctorSettingsScreen() {
             />
           )}
         </View>
-      </ScrollView>
+      </ScrollView> */}
     </SafeAreaView>
   );
 }
